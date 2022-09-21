@@ -1,1 +1,311 @@
-jkqskjqsssSS
+*************************** DDL*******************
+
+Use  Company
+
+CREATE TABLE Department
+(
+    Deptno NUMERIC(2) primary key,
+    Deptname VARCHAR(20) unique,
+    Floor NUMERIC(2),
+    Location VARCHAR(20),
+)
+
+CREATE TABLE Employee
+ (
+   Empno NUMERIC(3) primary key,
+   ManagerID NUMERIC(3),
+   FirstName varchar(20) NOT NULL,
+   LastName varchar(20),
+   UserID varchar(20),
+   deptno NUMERIC(2) foreign key(deptno) REFERENCES Department(DeptNo)
+		on delete cascade,
+   salary NUMERIC(5) ,
+   Commission NUMERIC(3),
+   Joining date,
+   Designation varchar(25)
+ )
+
+ SELECT * FROM Employee
+
+  --For PF
+   ALTER TABLE Employee ADD Pf DECIMAL(7,2)
+   CONSTRAINT chk_pf 
+   CHECK (Pf<=5000 AND Pf>=100)
+
+    --For HRA
+   ALTER TABLE Employee ADD HRA DECIMAL(7,2)
+
+   CREATE TABLE Customer
+   (
+    Custno NUMERIC(3) primary key,
+    Custname varchar(20),
+    Address varchar(40),
+   )
+
+   CREATE TABLE OrderID
+   (
+     orderno NUMERIC(3) Primary key,
+     custno NUMERIC(3) Foreign key(custno) REFERENCES Customer(custno),
+     orderdate date
+   )
+
+   CREATE TABLE OrderItem
+   (
+    ItemID NUMERIC(3) Primary Key,
+    OrderNo NUMERIC(3) Foreign Key (OrderNo) REFERENCES OrderID(orderno),
+    ItemName varchar(20),
+    Quantity NUMERIC(2)
+   )
+
+   Drop Table OrderItem
+
+   --increase the width of address
+   ALTER TABLE Customer ALTER COLUMN Address VARCHAR(100)
+
+   CREATE TABLE Course
+   (
+    CourseId varchar(5) primary KEY,
+    StreamId varchar(20),
+    Title varchar(40),
+    Description varchar(200),
+    Fees NUMERIC,
+   )
+
+   CREATE TABLE Batch
+   (
+    BatchId varchar(30) PRIMARY KEY,
+    CourseId varchar(5) foreign key (CourseId) REFERENCES Course(CourseId) ,
+    BatchName Char(1)
+   )
+
+   
+   CREATE TABLE Student
+   (
+    Studid varchar(20) primary key,
+    Lastname varchar(25),
+    BatchId varchar(30) Foreign key(BatchId) REFERENCES Batch(BatchId),
+    MiddleName varchar(30),
+    Firstname varchar(20),
+     Dob Date default GETDATE() ,
+     Address varchar(50),
+     City varchar(20),
+     State varchar(2),
+     Zipcode varchar(9),
+     Telephone varchar(10),
+     Fax varchar(10),
+     Email varchar(30),
+     Grade char(1) 
+     CONSTRAINT chk_Grade
+     CHECK(Grade IN('A','A+','A-','B','B+','B-','C','C+','C-','D','D+','D-','E','E+','E-'))
+   )
+
+   -- DROP MIDDLE NAME
+    ALTER TABLE Student DROP COLUMN MiddleName
+
+    -- Rename
+     EXEC sp_rename 'Student','Participant'
+
+     *********DML***************************
+
+     use Company
+
+--1
+SELECT Empno AS Id,
+	   FirstName AS LastName,
+	   deptno AS DeptId
+    INTO EmpHistory
+	FROM Employee
+
+	SELECT * FROM EmpHistory
+
+--2
+insert into Department values( 10,'IB',2,'Kerala')
+--3
+insert into Department values( 12,'Accounts',2,'Trivandrum')
+insert into Department values( 13,'Finance',3,'Tripura')
+insert into Department values( 14,'DALLAS',7,'Ranchi')
+
+select * from Department
+
+--4
+insert into Employee 
+	values(100,11,'Ravi','Kumar','Ravi15', 10,50000,250,'2022-12-02','SDE',1000.99,2000.88)
+insert into Employee 
+	values(101,12,'Rakesh','singh','Rk12', 10,90000,220,'2022-12-07','SDE 2',1002,2009.2)
+insert into Employee 
+	values(102,13,'joy','sin','joy76', 10,23342,400,'2021-11-18','SDE 3',4000,2008)
+insert into Employee 
+	values(103,14,'joe','san','joe76', 12,35000,400,'2021-11-18','SDE 4',4000,2008)
+insert into Employee 
+	values(12,14,'johnny','san','joe76', 12,35000,400,'2021-11-18','SDE 4',4000,2008)
+insert into Employee 
+	values(105,105,'johnny','san','joe76', 12,35000,400,'2021-11-18','SDE 4',4000,2008)
+	select * from Employee
+--
+insert into Course
+     values( 'b1','cse','AI','abcdef',20000)
+insert into Course
+     values( 'b2','IT','OS','GHijk',40000)
+insert into Course
+     values( 'b3','EEE','DSA','lmnop',60000)
+	 select * from Course
+--
+insert into Batch
+      values('A1','b1','D')
+insert into Batch
+      values('B1','b1','E')
+insert into Batch
+      values('C1','b1','F')
+	  select * from Batch
+--
+insert into Customer
+      values( 500,'sid','Ranchi')
+insert into Customer
+      values( 501,'joy','nagpur')
+insert into Customer
+      values( 502,'alex','bhopal')
+	  select * from Customer
+insert into Customer
+      values( 503,'Vishnu','Goa')
+insert into Customer
+      values( 503,'Madhu','Bhilai')
+	  select * from Customer
+--
+insert into OrderID
+      values(01,500,'2019-11-07')
+insert into OrderID
+      values(02,501,'2015-12-18')
+insert into OrderID
+      values(03,502,'2014-01-01')
+	  select * from OrderID
+--
+insert into OrderItem
+		values( 200,01,'Bat',10)
+insert into OrderItem
+		values( 201,02,'Ball',16)
+insert into OrderItem
+		values( 202,03,'Gloves',19)
+		select * from OrderItem
+--
+insert into Participant(Studid,lastname,BatchId,Firstname,Address,City,State,Zipcode,Telephone,Fax,Email,Grade)
+		values('i1','Kumar','A1','Ravi','Ranchi','patratu','Jh','829119','9006134536','abc12','cde','A')
+insert into Participant(Studid,lastname,BatchId,Firstname,Address,City,State,Zipcode,Telephone,Fax,Email,Grade)
+		values('i2','Kumari','B1','Raj','Ramgarh','patna','Br','829118','9006134536','avs2','ked','C')
+insert into Participant(Studid,lastname,BatchId,Firstname,Address,City,State,Zipcode,Telephone,Fax,Email,Grade)
+		values('i3','singh','C1','Ram','Ratu','gola','Cg','829114','9006134536','jd12','vdae','D')
+insert into Participant(Studid,lastname,BatchId,Firstname,Address,City,State,Zipcode,Telephone,Fax,Email,Grade)
+		values('i4','singh','C1','Ram','Ratu','gola','Cg','829114','9006134536','jd12',NULL,'D')
+insert into Participant(Studid,lastname,BatchId,Firstname,Address,City,State,Zipcode,Telephone,Fax,Email,Grade)
+		values('i5','singh','C1','Ramuu','Ratu','gola','Cg','829114',NULL,'jd12',NULL,'D')
+		select * from Participant
+
+--5
+Delete From Customer WHERE Custname = 'Vishnu'
+
+
+--6--
+Insert Into Employee(EmpNo,FirstName)
+              VALUES(23,'Sudhir')
+
+--7
+     UPDATE Customer SET Address = 'New Delhi'  WHERE Custname = 'Madhu'
+
+--8--
+   DELETE FROM Employee WHERE deptno = 12 AND salary > 5000
+
+--9--
+    UPDATE Employee SET deptno = 10, FirstName = 'Rishi'  WHERE Empno = 12
+
+--10--
+    UPDATE Participant SET Email = 'NA'  WHERE Email IS NULL    
+
+--11--
+      DELETE FROM Participant    WHERE DATEDIFF(YEAR,Dob,GETDATE())>20
+
+--12--
+      DELETE FROM Participant    WHERE Email IS NULL OR Telephone IS NULL
+
+--13--
+      DELETE FROM Participant    WHERE Dob LIKE '_____06_05'
+
+--14--
+     UPDATE Participant    SET FirstName = 'XXX',    Dob = GETDATE()  WHERE FirstName LIKE '___A%'
+
+--15--
+   DELETE FROM Participant    WHERE State LIKE '%a'
+
+--16--
+UPDATE Participant    SET LastName = 'Jan'    WHERE Dob LIKE'_____01___'
+
+--17--
+DELETE FROM Participant    WHERE State LIKE 'T%'
+
+******************************DQL********************************
+use Company
+
+
+--1--
+SELECT FirstName ,
+       Salary*12*0.3 AS [Annual tax]
+       FROM Employee
+
+
+
+--2--
+SELECT * FROM Employee
+    ORDER BY FirstName ASC
+
+
+
+--3--
+SELECT * FROM Employee
+    ORDER BY Salary DESC
+
+
+
+--4--
+SELECT * FROM Employee
+    WHERE FirstName LIKE 'A%e%t'
+
+
+
+--5--
+SELECT * FROM Employee
+    WHERE Joining > '1998-01-01'
+    AND Salary > 25000
+
+
+
+--6--
+SELECT * FROM Employee
+        WHERE Commission = NULL
+
+
+
+--7--
+SELECT CAST(ProPrice AS VARCHAR(40))
+        AS [Festive Offers]
+        FROM Product
+        SET ProPrice = 'ABC costs 52.00 after discount.'
+    
+
+
+
+--8--
+SELECT * FROM Product
+        WHERE ProPrice > 50 AND ProPrice < 100
+
+
+
+
+--9--
+SELECT * FROM Product
+        WHERE ProPrice = 50 AND ProPrice = 100
+
+
+
+--10--
+SELECT DISTINCT Designation
+                FROM Employee
+
+------JOIN------
