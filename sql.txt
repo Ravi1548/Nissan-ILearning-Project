@@ -307,3 +307,5 @@ SELECT * FROM Product
 --10--
 SELECT DISTINCT Designation
                 FROM Employee
+
+------JOIN------
